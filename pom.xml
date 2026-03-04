@@ -151,5 +151,21 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
 
+		<profile>
+			<id>testing</id>
+			<properties>
+				<jacoco.minimum.coverage>0.60</jacoco.minimum.coverage>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>production</id>
+			<properties>
+				<jacoco.minimum.coverage>0.85</jacoco.minimum.coverage>
+			</properties>
+		</profile>
+
+	</profiles>
 </project>
