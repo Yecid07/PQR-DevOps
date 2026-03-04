@@ -1,5 +1,7 @@
 package com.devops.api.pqr.reviewer;
 
+import com.devops.api.pqr.reviewer.entity.Reviewer;
+import com.devops.api.pqr.reviewer.mapper.ReviewerMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ class ReviewerControllerTest {
 
     @MockitoBean
     private ReviewerService reviewerService;
+
+    @MockitoBean
+    private ReviewerMapper reviewerMapper;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

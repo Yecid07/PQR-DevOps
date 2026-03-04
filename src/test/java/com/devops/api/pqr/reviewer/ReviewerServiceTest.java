@@ -3,6 +3,7 @@ package com.devops.api.pqr.reviewer;
 import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.devops.api.pqr.reviewer.entity.Reviewer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.devops.api.pqr.reviewer;
+package com.devops.api.pqr.reviewer.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
