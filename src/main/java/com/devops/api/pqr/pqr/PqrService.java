@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +19,6 @@ public class PqrService {
 
     @Transactional
     public Pqr createPqr(CreatePqrDto dto, List<MultipartFile> files) {
-        // 1. Create and Save PQR first
         Pqr pqr = Pqr.builder()
                 .type(dto.getType())
                 .customerEmail(dto.getCustomerEmail())
@@ -29,7 +27,6 @@ public class PqrService {
 
         Pqr savedPqr = pqrRepository.save(pqr);
 
-        // 2. Process files if they exist
         if (files != null && !files.isEmpty()) {
             files.forEach(file -> {
                 String mockUrl = "https://storage.provider.com/pqrs/" + savedPqr.getId() + "/" + file.getOriginalFilename();
@@ -38,7 +35,7 @@ public class PqrService {
                         .fileName(file.getOriginalFilename())
                         .contentType(file.getContentType())
                         .storageUrl(mockUrl)
-                        .pqr(savedPqr) // Link to the PQR
+                        .pqr(savedPqr)
                         .build();
 
                 documentRepository.save(doc);

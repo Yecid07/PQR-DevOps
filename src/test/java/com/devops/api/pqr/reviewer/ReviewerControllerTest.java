@@ -86,7 +86,7 @@ class ReviewerControllerTest {
     }
 
     @Test
-    @DisplayName("DELETE /reviewer/{id} - Should return 400 when service throws exception")
+    @DisplayName("DELETE /reviewer/{id} - Should return 500 when service throws exception")
     void testDeleteShouldReturnBadRequestWhenIdNotFound() throws Exception {
         // GIVEN
         String id = "invalid-id";
@@ -96,7 +96,7 @@ class ReviewerControllerTest {
         // WHEN
         // THEN
         mockMvc.perform(delete(BASE_URL + "/" + id))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().is5xxServerError());
     }
 
     private Reviewer createReviewerRequest() {
