@@ -25,4 +25,10 @@ public class ReviewerController {
         return ResponseEntity.status(HttpStatus.CREATED).body(reviewerService.saveReviewer(reviewer));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable String id) {
+        this.reviewerService.delete(id);
+        return ResponseEntity.ok("Reviewer deleted correctly");
+    }
+
 }
