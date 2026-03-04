@@ -1,11 +1,9 @@
-name: Test Environment Pipeline
+name: Production Environment Pipeline
 
 on:
   push:
     branches:
-      - 'feature/**'
-      - 'release/**'
-      - 'hotfix/**'
+      - main
 
 jobs:
   test:
@@ -21,5 +19,5 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Run tests with coverage ≥ 60%
-        run: mvn clean verify -Ptesting
+      - name: Run tests with coverage ≥ 80%
+        run: mvn clean verify -Pproduction
