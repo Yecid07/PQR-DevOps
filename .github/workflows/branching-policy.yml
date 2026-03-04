@@ -1,0 +1,42 @@
+name: "Branch Policy Validator"
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    branches:
+      - main
+      - 'feature/**'
+      - 'release/**'
+      - 'hotfix/**'
+
+jobs:
+  enforce-branch-policy:
+    name: Validate Branching Rules
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Naming Convention
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SOURCE_BRANCH="${{ github.event.pull_request.head.ref }}"
+          TARGET_BRANCH="${{ github.event.pull_request.base.ref }}"
+
+          echo "🔍 Analyzing PR Flow: $SOURCE_BRANCH -> $TARGET_BRANCH"
+
+          # Rule for Main: Source must be feature/, release/, or hotfix/
+          if [[ "$TARGET_BRANCH" == "main" ]]; then
+            if ! [[ "$SOURCE_BRANCH" =~ ^(feature|release|hotfix)/.+$ ]]; then
+              echo "----------------------------------------------------------------"
+              echo "❌ ERROR: Invalid Source Branch for 'main'"
+              echo "----------------------------------------------------------------"
+              echo "To merge into 'main', your branch must start with:"
+              echo "  - feature/*"
+              echo "  - release/*"
+              echo "  - hotfix/*"
+              exit 1
+            fi
+          fi
+
+          echo "✅ Branch policy validation successful."
