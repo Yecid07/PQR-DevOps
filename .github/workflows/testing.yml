@@ -22,4 +22,4 @@ jobs:
           cache: maven
 
       - name: Run tests with coverage ≥ 60%
-        run: mvn clean verify -D jacoco.minimum.coverage=0.60
+        run: mvn clean verify -Ptesting
