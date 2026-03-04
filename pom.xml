@@ -132,6 +132,7 @@
                     <excludes>
                         <exclude>com/devops/api/pqr/PqrApplication.class</exclude>
 						<exclude>com/devops/api/pqr/reviewer/mapper/*Impl.class</exclude>
+						<exclude>com/devops/api/pqr/document/mapper/*Impl.class</exclude>
                     </excludes>
                 </configuration>
 				<executions>
