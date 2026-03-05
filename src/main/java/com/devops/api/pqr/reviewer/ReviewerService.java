@@ -22,7 +22,6 @@ public class ReviewerService {
     public void delete(String id) {
         Reviewer reviewer = reviewerRepository.findById(id).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id not found"));
-        System.out.println(reviewer);
         reviewerRepository.delete(reviewer);
     }
 

@@ -4,10 +4,13 @@ import com.devops.api.pqr.document.entity.Document;
 import com.devops.api.pqr.document.DocumentRepository;
 import com.devops.api.pqr.pqr.dto.CreatePqrDto;
 import com.devops.api.pqr.pqr.entity.Pqr;
+import com.devops.api.pqr.reviewer.entity.Reviewer;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Iterator;
 import java.util.List;
@@ -46,6 +49,11 @@ public class PqrService {
         return savedPqr;
     }
 
+    public void delete(String id) {
+        Pqr reviewer = pqrRepository.findById(id).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id not found"));
+        pqrRepository.delete(reviewer);
+    }
     public Iterable<Pqr> getAll(){
         return pqrRepository.findAll();
     }
