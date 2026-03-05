@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Iterator;
 import java.util.Optional;
 
 @Service
@@ -23,6 +24,10 @@ public class ReviewerService {
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id not found"));
         System.out.println(reviewer);
         reviewerRepository.delete(reviewer);
+    }
+
+    public Iterable<Reviewer> getAll(){
+        return reviewerRepository.findAll();
     }
 
 }

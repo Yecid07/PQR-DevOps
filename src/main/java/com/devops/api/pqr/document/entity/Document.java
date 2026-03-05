@@ -1,6 +1,7 @@
 package com.devops.api.pqr.document.entity;
 
 import com.devops.api.pqr.pqr.entity.Pqr;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,7 +19,8 @@ public class Document {
     private String storageUrl;
     private String contentType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "pqr_id")
+    @JsonBackReference
     private Pqr pqr;
 }

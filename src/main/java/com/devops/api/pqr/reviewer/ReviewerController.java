@@ -31,4 +31,9 @@ public class ReviewerController {
         return ResponseEntity.ok("Reviewer deleted correctly");
     }
 
+    @GetMapping()
+    public ResponseEntity<Iterable<Reviewer>> get(@PathVariable String id) {
+        return ResponseEntity.ok(this.reviewerService.getAll());
+    }
+
 }
