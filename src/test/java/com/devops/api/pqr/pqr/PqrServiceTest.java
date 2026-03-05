@@ -88,7 +88,4 @@ class PqrServiceTest {
         assertNotNull(result);
     }
 
-    private org.mockito.verification.VerificationMode shouldHaveNoInteractions() {
-        return never();
-    }
 }

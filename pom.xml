@@ -129,12 +129,12 @@
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.14</version>
                 <configuration>
-                    <excludes>
+					<excludes>
 						<exclude>com/devops/api/pqr/PqrApplication.class</exclude>
 						<exclude>com/devops/api/pqr/GlobalExceptionHandler.class</exclude>
 						<exclude>com/devops/api/pqr/reviewer/mapper/*Impl.class</exclude>
 						<exclude>com/devops/api/pqr/document/mapper/*Impl.class</exclude>
-                    </excludes>
+					</excludes>
                 </configuration>
 				<executions>
 					<execution>
