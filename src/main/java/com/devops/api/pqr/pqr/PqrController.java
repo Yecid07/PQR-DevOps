@@ -26,6 +26,12 @@ public class PqrController {
         return ResponseEntity.status(HttpStatus.CREATED).body(pqrService.createPqr(dto, files));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable String id) {
+        this.pqrService.delete(id);
+        return ResponseEntity.ok("Pqr deleted correctly");
+    }
+
     @GetMapping()
     public ResponseEntity<Iterable<Pqr>> getAll() {
         return ResponseEntity.ok().body(pqrService.getAll());
