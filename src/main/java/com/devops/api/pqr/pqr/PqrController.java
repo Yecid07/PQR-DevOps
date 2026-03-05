@@ -25,4 +25,9 @@ public class PqrController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pqrService.createPqr(dto, files));
     }
+
+    @GetMapping()
+    public ResponseEntity<Iterable<Pqr>> getAll() {
+        return ResponseEntity.ok().body(pqrService.getAll());
+    }
 }
