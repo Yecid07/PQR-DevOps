@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -38,4 +39,12 @@ public class PqrController {
     public ResponseEntity<Iterable<Pqr>> getAll() {
         return ResponseEntity.ok().body(pqrService.getAll());
     }
+
+
+    @PostMapping("/try")
+    public ResponseEntity<Map<String, Object>> prueba(@RequestBody Map<String, Object> body) {
+        log.info("Llamado recibido con el cuerpo: {}", body);
+        return ResponseEntity.ok(body);
+    }
+
 }

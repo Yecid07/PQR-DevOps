@@ -24,36 +24,35 @@ public class BookOrderAdapter implements BookOrderPort {
     private int bookOrderThreshold;
 
     @Override
-    public void notifyBookOrder(Pqr pqr) {
-
-        final Map<String, Object> payload = getObjectMap(pqr);
-
+    public boolean notifyBookOrder(Pqr pqr) {
         try {
             restClient.post()
-                    .uri(bookOrderServiceUrl )
+                    .uri(bookOrderServiceUrl)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .body(payload)
+                    .body(buildPayload(pqr))
                     .retrieve()
                     .toBodilessEntity();
 
             log.info("Book order notified for PQR id={}", pqr.getId());
+            return true;
         } catch (Exception e) {
             log.error("Failed to notify book order service for PQR id={}: {}", pqr.getId(), e.getMessage());
+            return false;
         }
     }
 
-    private Map<String, Object> getObjectMap(Pqr pqr) {
+    private Map<String, Object> buildPayload(Pqr pqr) {
         Map<String, Object> pqrPayload = Map.of(
-                "id",      pqr.getId(),
-                "asunto",  pqr.getSubject(),
+                "id",          pqr.getId(),
+                "asunto",      pqr.getSubject(),
                 "responsable", pqr.getCustomerEmail(),
-                "conteo", bookOrderThreshold
+                "conteo",      bookOrderThreshold
         );
 
         return Map.of(
-                "titulo_libro",  pqr.getBook().get("bookTitle"),
-                "autor", pqr.getBook().get("bookAuthor"),
-                "pqr", pqrPayload
+                "titulo_libro", pqr.getBook().get("bookTitle"),
+                "autor",        pqr.getBook().get("bookAuthor"),
+                "pqr",          pqrPayload
         );
     }
 }
