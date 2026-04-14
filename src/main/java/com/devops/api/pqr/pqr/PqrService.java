@@ -1,6 +1,8 @@
 package com.devops.api.pqr.pqr;
 
+import com.devops.api.pqr.book.BookOrderNotificationRepository;
 import com.devops.api.pqr.book.BookOrderPort;
+import com.devops.api.pqr.book.entity.BookOrderNotification;
 import com.devops.api.pqr.document.entity.Document;
 import com.devops.api.pqr.document.DocumentRepository;
 import com.devops.api.pqr.pqr.dto.CreatePqrDto;
@@ -15,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +29,8 @@ public class PqrService {
     private final PqrRepository pqrRepository;
     private final DocumentRepository documentRepository;
     private final BookOrderPort bookOrderPort;
+    private final BookOrderNotificationRepository notificationRepository;
+
 
     @Value("${pqr.book.order.threshold:5}")
     private int bookOrderThreshold;
@@ -45,7 +50,7 @@ public class PqrService {
         Pqr savedPqr = pqrRepository.save(pqr);
 
         saveFiles(files, savedPqr);
-        triggerSubjectActions(savedPqr);
+        triggerOrder(savedPqr);
 
         return savedPqr;
     }
@@ -72,20 +77,38 @@ public class PqrService {
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id not found"));
         pqrRepository.delete(reviewer);
     }
-    public Iterable<Pqr> getAll(){
+
+    public Iterable<Pqr> getAll() {
         return pqrRepository.findAll();
     }
 
-    private void triggerSubjectActions(Pqr savedPqr) {
-        if ("peticion".equals(savedPqr.getType()) && "comprar libro".equals(savedPqr.getSubject())) {
-            String bookTitle  = (String) savedPqr.getBook().get("bookTitle");
-            String bookAuthor = (String) savedPqr.getBook().get("bookAuthor");
+    private void triggerOrder(Pqr savedPqr) {
+        if (!"peticion".equals(savedPqr.getType()) || !"comprar libro".equals(savedPqr.getSubject())) {
+            return;
+        }
 
-            long count = pqrRepository.countByTypeSubjectAndBook(
-                    "peticion", "comprar libro", bookTitle, bookAuthor);
+        String bookTitle = (String) savedPqr.getBook().get("bookTitle");
+        String bookAuthor = (String) savedPqr.getBook().get("bookAuthor");
 
-            if (count >= bookOrderThreshold) {
-                bookOrderPort.notifyBookOrder(savedPqr);
+        boolean alreadyNotified = notificationRepository
+                .existsByBookTitleAndBookAuthor(bookTitle, bookAuthor);
+
+        if (alreadyNotified) {
+            return;
+        }
+
+        long count = pqrRepository.countByTypeSubjectAndBook(
+                "peticion", "comprar libro", bookTitle, bookAuthor);
+
+        if (count >= bookOrderThreshold) {
+            boolean success = bookOrderPort.notifyBookOrder(savedPqr);
+
+            if (success) {
+                notificationRepository.save(BookOrderNotification.builder()
+                        .bookTitle(bookTitle)
+                        .bookAuthor(bookAuthor)
+                        .notifiedAt(LocalDateTime.now())
+                        .build());
             }
         }
     }
