@@ -1,36 +1,56 @@
 package com.devops.api.pqr.pqr;
 
+import com.devops.api.pqr.book.BookOrderPort;
 import com.devops.api.pqr.document.entity.Document;
 import com.devops.api.pqr.document.DocumentRepository;
 import com.devops.api.pqr.pqr.dto.CreatePqrDto;
 import com.devops.api.pqr.pqr.entity.Pqr;
-import com.devops.api.pqr.reviewer.entity.Reviewer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import tools.jackson.databind.ObjectMapper;
 
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PqrService {
+    private final ObjectMapper objectMapper;
     private final PqrRepository pqrRepository;
     private final DocumentRepository documentRepository;
+    private final BookOrderPort bookOrderPort;
+
+    @Value("${pqr.book.order.threshold:5}")
+    private int bookOrderThreshold;
 
     @Transactional
     public Pqr createPqr(CreatePqrDto dto, List<MultipartFile> files) {
+        Map<String, Object> bookMap = objectMapper.convertValue(dto.getBook(), Map.class);
+
         Pqr pqr = Pqr.builder()
                 .type(dto.getType())
                 .customerEmail(dto.getCustomerEmail())
                 .description(dto.getDescription())
+                .subject(dto.getSubject())
+                .book(bookMap)
                 .build();
 
         Pqr savedPqr = pqrRepository.save(pqr);
 
+        saveFiles(files, savedPqr);
+        triggerSubjectActions(savedPqr);
+
+        return savedPqr;
+    }
+
+    private void saveFiles(List<MultipartFile> files, Pqr savedPqr) {
         if (files != null && !files.isEmpty()) {
             files.forEach(file -> {
                 String mockUrl = "https://storage.provider.com/pqrs/" + savedPqr.getId() + "/" + file.getOriginalFilename();
@@ -45,8 +65,6 @@ public class PqrService {
                 documentRepository.save(doc);
             });
         }
-
-        return savedPqr;
     }
 
     public void delete(String id) {
@@ -56,5 +74,19 @@ public class PqrService {
     }
     public Iterable<Pqr> getAll(){
         return pqrRepository.findAll();
+    }
+
+    private void triggerSubjectActions(Pqr savedPqr) {
+        if ("peticion".equals(savedPqr.getType()) && "comprar libro".equals(savedPqr.getSubject())) {
+            String bookTitle  = (String) savedPqr.getBook().get("bookTitle");
+            String bookAuthor = (String) savedPqr.getBook().get("bookAuthor");
+
+            long count = pqrRepository.countByTypeSubjectAndBook(
+                    "peticion", "comprar libro", bookTitle, bookAuthor);
+
+            if (count >= bookOrderThreshold) {
+                bookOrderPort.notifyBookOrder(savedPqr);
+            }
+        }
     }
 }

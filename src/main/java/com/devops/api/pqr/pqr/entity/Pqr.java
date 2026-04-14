@@ -31,5 +31,5 @@ public class Pqr {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    private Map<String, Object> metadata;
+    private Map<String, Object> book;
 }

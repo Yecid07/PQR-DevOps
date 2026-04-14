@@ -1,5 +1,6 @@
 package com.devops.api.pqr.pqr.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -18,4 +19,11 @@ public class CreatePqrDto {
 
     @NotBlank
     private String description;
+
+    @NotBlank
+    private String subject;
+
+    @Valid
+    private BookDto book;
+
 }
