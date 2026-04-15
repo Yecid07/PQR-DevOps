@@ -7,8 +7,23 @@ services:
     container_name: pqr-management
     ports:
       - ${APP_DOCKER_PORTS}
-    environment:
-      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
-      - SERVER_PORT=${SERVER_PORT}
-      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+    env_file:
+      - .env
+    networks:
+      - monitoring
 
+  grafana-alloy:
+    image: grafana/alloy:latest
+    container_name: grafana-alloy
+    volumes:
+      - ./alloy.hcl:/etc/alloy/config.alloy
+    command: run /etc/alloy/config.alloy
+    environment:
+      - GRAFANA_API_KEY=${GRAFANA_API_KEY}
+    depends_on:
+      - pqr-management
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
