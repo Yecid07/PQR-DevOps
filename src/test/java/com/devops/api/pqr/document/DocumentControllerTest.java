@@ -33,7 +33,7 @@ public class DocumentControllerTest {
     @MockitoBean
     private DocumentMapper documentMapper;
 
-    private static final String BASE_URL = "/api/v1/document";
+    private static final String BASE_URL = "/api/v2/document";
 
     private static final String DOCUMENT_ID =
             UUID.randomUUID().toString();

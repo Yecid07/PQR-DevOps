@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/pqr")
+@RequestMapping("/api/v2/pqr")
 @RequiredArgsConstructor
 public class PqrController {
     private final PqrService pqrService;

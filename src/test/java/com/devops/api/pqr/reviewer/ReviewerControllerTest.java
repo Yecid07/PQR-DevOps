@@ -37,7 +37,7 @@ class ReviewerControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final String BASE_URL = "/api/v1/reviewer";
+    private static final String BASE_URL = "/api/v2/reviewer";
 
     @Test
     @DisplayName("POST /reviewer - Should create a new reviewer successfully")

@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/reviewer")
+@RequestMapping("/api/v2/reviewer")
 public class ReviewerController {
     private final ReviewerMapper reviewerMapper;
     private final ReviewerService reviewerService;

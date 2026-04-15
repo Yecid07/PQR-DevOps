@@ -37,7 +37,7 @@ class PqrControllerTest {
     @MockitoBean
     private DocumentMapper documentMapper;
 
-    private static final String BASE_URL = "/api/v1/pqr";
+    private static final String BASE_URL = "/api/v2/pqr";
 
     private CreatePqrDto validDto;
     private Map<String, Object> bookMap;

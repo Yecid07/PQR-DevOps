@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/v1/document")
+@RequestMapping("/api/v2/document")
 @RequiredArgsConstructor
 public class DocumentController {
     private final DocumentService documentService;
