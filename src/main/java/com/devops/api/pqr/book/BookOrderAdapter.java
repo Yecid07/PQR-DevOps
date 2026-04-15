@@ -1,5 +1,6 @@
 package com.devops.api.pqr.book;
 
+import com.devops.api.pqr.book.dto.BookOrderResponse;
 import com.devops.api.pqr.pqr.entity.Pqr;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,20 +25,20 @@ public class BookOrderAdapter implements BookOrderPort {
     private int bookOrderThreshold;
 
     @Override
-    public boolean notifyBookOrder(Pqr pqr) {
+    public BookOrderResponse notifyBookOrder(Pqr pqr) {
         try {
-            restClient.post()
+            BookOrderResponse response = restClient.post()
                     .uri(bookOrderServiceUrl)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(buildPayload(pqr))
                     .retrieve()
-                    .toBodilessEntity();
+                    .body(BookOrderResponse.class);
 
             log.info("Book order notified for PQR id={}", pqr.getId());
-            return true;
+            return response;
         } catch (Exception e) {
             log.error("Failed to notify book order service for PQR id={}: {}", pqr.getId(), e.getMessage());
-            return false;
+            return null;
         }
     }
 

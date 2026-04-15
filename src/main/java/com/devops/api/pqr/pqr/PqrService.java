@@ -1,12 +1,18 @@
 package com.devops.api.pqr.pqr;
 
-import com.devops.api.pqr.book.BookOrderNotificationRepository;
+import com.devops.api.pqr.book.dto.BookOrderResponse;
+import com.devops.api.pqr.book.entity.BookOrderResult;
+import com.devops.api.pqr.book.mapper.BookOrderResultMapper;
+import com.devops.api.pqr.book.repository.BookOrderNotificationRepository;
 import com.devops.api.pqr.book.BookOrderPort;
 import com.devops.api.pqr.book.entity.BookOrderNotification;
+import com.devops.api.pqr.book.repository.BookOrderResultRepository;
 import com.devops.api.pqr.document.entity.Document;
 import com.devops.api.pqr.document.DocumentRepository;
 import com.devops.api.pqr.pqr.dto.CreatePqrDto;
+import com.devops.api.pqr.pqr.dto.UpdatePqrDto;
 import com.devops.api.pqr.pqr.entity.Pqr;
+import com.devops.api.pqr.pqr.mapper.PqrMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,12 +31,15 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class PqrService {
+
+    private final PqrMapper pqrMapper;
     private final ObjectMapper objectMapper;
     private final PqrRepository pqrRepository;
     private final DocumentRepository documentRepository;
     private final BookOrderPort bookOrderPort;
     private final BookOrderNotificationRepository notificationRepository;
-
+    private final BookOrderResultRepository bookOrderResultRepository;
+    private final BookOrderResultMapper bookOrderResultMapper;
 
     @Value("${pqr.book.order.threshold:5}")
     private int bookOrderThreshold;
@@ -87,29 +96,60 @@ public class PqrService {
             return;
         }
 
-        String bookTitle = (String) savedPqr.getBook().get("bookTitle");
+        String bookTitle  = (String) savedPqr.getBook().get("bookTitle");
         String bookAuthor = (String) savedPqr.getBook().get("bookAuthor");
 
         boolean alreadyNotified = notificationRepository
                 .existsByBookTitleAndBookAuthor(bookTitle, bookAuthor);
 
         if (alreadyNotified) {
+            log.info("Book order already notified for title={} author={}", bookTitle, bookAuthor);
             return;
         }
 
         long count = pqrRepository.countByTypeSubjectAndBook(
                 "peticion", "comprar libro", bookTitle, bookAuthor);
 
-        if (count >= bookOrderThreshold) {
-            boolean success = bookOrderPort.notifyBookOrder(savedPqr);
+        log.info("PQR count for book title={} author={}: {}/{}", bookTitle, bookAuthor, count, bookOrderThreshold);
 
-            if (success) {
+        if (count >= bookOrderThreshold) {
+            BookOrderResponse response = bookOrderPort.notifyBookOrder(savedPqr);
+
+            if (response != null) {
                 notificationRepository.save(BookOrderNotification.builder()
                         .bookTitle(bookTitle)
                         .bookAuthor(bookAuthor)
                         .notifiedAt(LocalDateTime.now())
                         .build());
+
+                saveBookOrderResult(response, bookTitle, bookAuthor);
             }
         }
     }
+
+    @Transactional
+    public Pqr updatePqr(String id, UpdatePqrDto dto) {
+
+        Pqr pqr = pqrRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "PQR with id " + id + " not found"));
+
+        pqrMapper.updatePqr(dto, pqr);
+
+        Pqr updatedPqr = pqrRepository.save(pqr);
+
+        triggerOrder(updatedPqr);
+
+        return updatedPqr;
+    }
+
+    private void saveBookOrderResult(BookOrderResponse response, String bookTitle, String bookAuthor) {
+
+        BookOrderResult result = bookOrderResultMapper.toEntity(response,bookTitle,bookAuthor);
+
+        bookOrderResultRepository.save(result);
+
+        log.info("BookOrderResult saved for book title={}", bookTitle);
+    }
+
 }

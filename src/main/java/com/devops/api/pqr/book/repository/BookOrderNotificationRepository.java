@@ -1,4 +1,4 @@
-package com.devops.api.pqr.book;
+package com.devops.api.pqr.book.repository;
 
 import com.devops.api.pqr.book.entity.BookOrderNotification;
 import org.springframework.data.repository.CrudRepository;

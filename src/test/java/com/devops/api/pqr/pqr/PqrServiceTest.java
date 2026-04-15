@@ -1,6 +1,6 @@
 package com.devops.api.pqr.pqr;
 
-import com.devops.api.pqr.book.BookOrderNotificationRepository;
+import com.devops.api.pqr.book.repository.BookOrderNotificationRepository;
 import com.devops.api.pqr.book.BookOrderPort;
 import com.devops.api.pqr.document.DocumentRepository;
 import com.devops.api.pqr.document.entity.Document;
@@ -125,7 +125,6 @@ class PqrServiceTest {
         given(pqrRepository.save(any())).willReturn(saved);
         given(notificationRepository.existsByBookTitleAndBookAuthor(any(), any())).willReturn(false);
         given(pqrRepository.countByTypeSubjectAndBook(any(), any(), any(), any())).willReturn(10L);
-        given(bookOrderPort.notifyBookOrder(any())).willReturn(true);
 
         Pqr result = pqrService.createPqr(validDto, null);
 

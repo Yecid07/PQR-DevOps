@@ -1,6 +1,7 @@
 package com.devops.api.pqr.pqr;
 
 import com.devops.api.pqr.pqr.dto.CreatePqrDto;
+import com.devops.api.pqr.pqr.dto.UpdatePqrDto;
 import com.devops.api.pqr.pqr.entity.Pqr;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,13 @@ public class PqrController {
     public ResponseEntity<Map<String, Object>> prueba(@RequestBody Map<String, Object> body) {
         log.info("Llamado recibido con el cuerpo: {}", body);
         return ResponseEntity.ok(body);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Pqr> update(
+            @PathVariable String id,
+            @RequestBody @Valid UpdatePqrDto dto) {
+        return ResponseEntity.ok(pqrService.updatePqr(id, dto));
     }
 
 }

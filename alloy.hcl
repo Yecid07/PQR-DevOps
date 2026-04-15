@@ -1,7 +1,7 @@
 prometheus.scrape "spring_boot" {
   targets = [
     {
-      __address__ = "pqr-management:8080",
+      __address__ = "localhost:8080",
     },
   ]
 
