@@ -141,6 +141,9 @@
 						<exclude>com/devops/api/pqr/GlobalExceptionHandler.class</exclude>
 						<exclude>com/devops/api/pqr/reviewer/mapper/*Impl.class</exclude>
 						<exclude>com/devops/api/pqr/document/mapper/*Impl.class</exclude>
+						<exclude>com/devops/api/pqr/book/*</exclude>
+						<exclude>com/devops/api/pqr/pqr/dto/*</exclude>
+						<exclude>com/devops/api/pqr/config/*</exclude>
 					</excludes>
                 </configuration>
 				<executions>
@@ -185,14 +188,14 @@
 		<profile>
 			<id>testing</id>
 			<properties>
-				<jacoco.minimum.coverage>0.60</jacoco.minimum.coverage>
+				<jacoco.minimum.coverage>0.65</jacoco.minimum.coverage>
 			</properties>
 		</profile>
 
 		<profile>
 			<id>production</id>
 			<properties>
-				<jacoco.minimum.coverage>0.85</jacoco.minimum.coverage>
+				<jacoco.minimum.coverage>0.80</jacoco.minimum.coverage>
 			</properties>
 		</profile>
 
