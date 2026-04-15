@@ -2,6 +2,7 @@ package com.devops.api.pqr.pqr;
 
 import com.devops.api.pqr.document.DocumentRepository;
 import com.devops.api.pqr.document.entity.Document;
+import com.devops.api.pqr.pqr.dto.BookDto;
 import com.devops.api.pqr.pqr.dto.CreatePqrDto;
 import com.devops.api.pqr.pqr.entity.Pqr;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,11 +42,13 @@ class PqrServiceTest {
     private PqrService pqrService;
 
     private CreatePqrDto validDto;
+    private BookDto bookDto;
     private List<MultipartFile> mockFiles;
 
     @BeforeEach
     void setUp() {
-        validDto = new CreatePqrDto("queja", "customer@test.com", "Service description");
+        bookDto = new BookDto("Clean Code", "Robert Martin");
+        validDto = new CreatePqrDto("peticion", "customer@test.com", "Service description", "comprar libro",bookDto);
         mockFiles = List.of(
                 new MockMultipartFile("files", "doc1.pdf", "application/pdf", "data".getBytes())
         );
