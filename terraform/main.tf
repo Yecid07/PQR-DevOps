@@ -7,7 +7,6 @@ locals {
 }
 
 
-# ── 1. ECR ───────────────────────────────────────────────────────────────────
 module "ecr" {
   source      = "./modules/ecr"
   project     = var.project
@@ -15,7 +14,6 @@ module "ecr" {
   tags        = local.common_tags
 }
 
-# ── 2. Red ───────────────────────────────────────────────────────────────────
 module "network" {
   source             = "./modules/network"
   project            = var.project
@@ -27,7 +25,6 @@ module "network" {
   tags               = local.common_tags
 }
 
-# ── 3. IAM ───────────────────────────────────────────────────────────────────
 module "iam" {
   source      = "./modules/iam"
   project     = var.project
@@ -37,7 +34,6 @@ module "iam" {
   tags        = local.common_tags
 }
 
-# ── 4. Bastion Host ──────────────────────────────────────────────────────────
 module "bastion" {
   source                    = "./modules/bastion"
   project                   = var.project
@@ -51,7 +47,6 @@ module "bastion" {
   tags                      = local.common_tags
 }
 
-# ── 5. RDS (subnet privada — acceso solo por túnel SSH via Bastion) ───────────
 module "rds" {
   source                = "./modules/rds"
   project               = var.project
@@ -66,7 +61,6 @@ module "rds" {
   tags                  = local.common_tags
 }
 
-# ── 6. Load Balancer ─────────────────────────────────────────────────────────
 module "load_balancer" {
   source                = "./modules/load-balancer"
   project               = var.project
@@ -78,7 +72,6 @@ module "load_balancer" {
   tags                  = local.common_tags
 }
 
-# ── 7. ECS Cluster ───────────────────────────────────────────────────────────
 module "ecs" {
   source      = "./modules/ecs"
   project     = var.project
@@ -86,7 +79,6 @@ module "ecs" {
   tags        = local.common_tags
 }
 
-# ── 8. Observabilidad ────────────────────────────────────────────────────────
 module "observability" {
   source      = "./modules/observability"
   project     = var.project
@@ -95,7 +87,6 @@ module "observability" {
   tags        = local.common_tags
 }
 
-# ── 9. Fargate Task ──────────────────────────────────────────────────────────
 module "fargate_task" {
   source      = "./modules/fargate-task"
   project     = var.project

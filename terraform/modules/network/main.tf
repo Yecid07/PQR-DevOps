@@ -1,4 +1,3 @@
-# ── VPC ──────────────────────────────────────────────────────────────────────
 resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
@@ -6,13 +5,11 @@ resource "aws_vpc" "main" {
   tags                 = merge(var.tags, { Name = "${var.project}-${var.environment}-vpc" })
 }
 
-# ── Internet Gateway ─────────────────────────────────────────────────────────
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
   tags   = merge(var.tags, { Name = "${var.project}-${var.environment}-igw" })
 }
 
-# ── Subnets públicas ─────────────────────────────────────────────────────────
 resource "aws_subnet" "public" {
   count                   = length(var.public_subnets)
   vpc_id                  = aws_vpc.main.id
@@ -25,7 +22,6 @@ resource "aws_subnet" "public" {
   })
 }
 
-# ── Subnets privadas ─────────────────────────────────────────────────────────
 resource "aws_subnet" "private" {
   count             = length(var.private_subnets)
   vpc_id            = aws_vpc.main.id
@@ -37,7 +33,6 @@ resource "aws_subnet" "private" {
   })
 }
 
-# ── NAT Gateway ──────────────────────────────────────────────────────────────
 resource "aws_eip" "nat" {
   domain = "vpc"
   tags   = merge(var.tags, { Name = "${var.project}-${var.environment}-nat-eip" })
@@ -50,7 +45,6 @@ resource "aws_nat_gateway" "main" {
   depends_on    = [aws_internet_gateway.main]
 }
 
-# ── Tabla de rutas pública ───────────────────────────────────────────────────
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
   route {
@@ -66,7 +60,6 @@ resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.public.id
 }
 
-# ── Tabla de rutas privada ───────────────────────────────────────────────────
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
   route {
@@ -82,7 +75,6 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private.id
 }
 
-# ── Security Group: ALB ──────────────────────────────────────────────────────
 resource "aws_security_group" "alb" {
   name        = "${var.project}-${var.environment}-sg-alb"
   description = "Permite trafico HTTP/HTTPS al ALB"
@@ -111,7 +103,6 @@ resource "aws_security_group" "alb" {
   tags = merge(var.tags, { Name = "${var.project}-${var.environment}-sg-alb" })
 }
 
-# ── Security Group: Bastion Host ─────────────────────────────────────────────
 resource "aws_security_group" "bastion" {
   name        = "${var.project}-${var.environment}-sg-bastion"
   description = "Permite SSH desde internet al Bastion Host"
@@ -133,7 +124,6 @@ resource "aws_security_group" "bastion" {
   tags = merge(var.tags, { Name = "${var.project}-${var.environment}-sg-bastion" })
 }
 
-# ── Security Group: ECS / Fargate ────────────────────────────────────────────
 resource "aws_security_group" "ecs" {
   name        = "${var.project}-${var.environment}-sg-ecs"
   description = "Permite trafico del ALB hacia los contenedores"
@@ -155,7 +145,6 @@ resource "aws_security_group" "ecs" {
   tags = merge(var.tags, { Name = "${var.project}-${var.environment}-sg-ecs" })
 }
 
-# ── Security Group: RDS ──────────────────────────────────────────────────────
 resource "aws_security_group" "rds" {
   name        = "${var.project}-${var.environment}-sg-rds"
   description = "Permite PostgreSQL desde ECS y desde el Bastion Host"

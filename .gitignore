@@ -37,3 +37,10 @@ build/
 .env.test
 
 **/htmlReport/
+
+# .gitignore
+*.tfstate
+*.tfstate.backup
+.terraform/
+*.tfvars
+.terraform.lock.hcl

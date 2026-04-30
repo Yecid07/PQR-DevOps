@@ -15,7 +15,7 @@ variable "project" {
   default     = "pqr"
 }
 
-# ── Red ─────────────────────────────────────────────────────────────────────
+# Red
 variable "vpc_cidr" {
   description = "CIDR block de la VPC"
   type        = string
@@ -40,7 +40,6 @@ variable "availability_zones" {
   default     = ["us-east-2a", "us-east-2b"]
 }
 
-# ── RDS ─────────────────────────────────────────────────────────────────────
 variable "db_name" {
   description = "Nombre de la base de datos"
   type        = string
@@ -65,17 +64,14 @@ variable "db_instance_class" {
   default     = "db.t3.micro"
 }
 
-# ── ECS / Fargate ────────────────────────────────────────────────────────────
 variable "app_image" {
   description = "URI de la imagen Docker de la aplicación"
   type        = string
-  default     = "799260644358.dkr.ecr.us-east-2.amazonaws.com/pqr-management:latest"
 }
 
 variable "alloy_image" {
   description = "URI de la imagen Docker de Grafana Alloy"
   type        = string
-  default     = "799260644358.dkr.ecr.us-east-2.amazonaws.com/alloy-custom:latest"
 }
 
 variable "app_port" {
@@ -120,7 +116,6 @@ variable "book_order_threshold" {
   default     = "5"
 }
 
-# ── Bastion Host ─────────────────────────────────────────────────────────────
 variable "bastion_public_key_path" {
   description = "Ruta a la clave pública SSH para el Bastion Host"
   type        = string

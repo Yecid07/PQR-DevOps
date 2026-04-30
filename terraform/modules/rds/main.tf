@@ -1,11 +1,9 @@
-# ── Subnet Group (subnets PRIVADAS — acceso solo desde dentro de la VPC) ─────
 resource "aws_db_subnet_group" "main" {
   name       = "${var.project}-${var.environment}-db-subnet-group"
   subnet_ids = var.private_subnet_ids
   tags = merge(var.tags, { Name = "${var.project}-${var.environment}-db-subnet-group" })
 }
 
-# ── Parameter Group PostgreSQL 15 ────────────────────────────────────────────
 resource "aws_db_parameter_group" "postgres" {
   name   = "${var.project}-${var.environment}-pg15"
   family = "postgres15"
@@ -22,7 +20,6 @@ resource "aws_db_parameter_group" "postgres" {
   tags = var.tags
 }
 
-# ── Instancia RDS PostgreSQL ──────────────────────────────────────────────────
 resource "aws_db_instance" "main" {
   identifier     = "${var.project}-${var.environment}"
   engine         = "postgres"
@@ -50,7 +47,7 @@ resource "aws_db_instance" "main" {
   # Backups
   backup_retention_period = 0
 
-  # Protección — false para poder hacer destroy en sustentación
+  # Protección — false para poder hacer destroy
   deletion_protection       = false
   skip_final_snapshot       = true
   final_snapshot_identifier = null

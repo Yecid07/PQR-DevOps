@@ -1,4 +1,3 @@
-# ── Application Load Balancer ────────────────────────────────────────────────
 resource "aws_lb" "main" {
   name               = "${var.project}-${var.environment}-alb"
   internal           = false
@@ -11,7 +10,6 @@ resource "aws_lb" "main" {
   tags = merge(var.tags, { Name = "${var.project}-${var.environment}-alb" })
 }
 
-# ── Target Group ─────────────────────────────────────────────────────────────
 resource "aws_lb_target_group" "app" {
   name        = "${var.project}-${var.environment}-tg"
   port        = var.app_port
@@ -34,7 +32,6 @@ resource "aws_lb_target_group" "app" {
   tags = merge(var.tags, { Name = "${var.project}-${var.environment}-tg" })
 }
 
-# ── Listener HTTP ─────────────────────────────────────────────────────────────
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.main.arn
   port              = 80

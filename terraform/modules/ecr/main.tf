@@ -1,4 +1,3 @@
-# ── Repositorio ECR: aplicación Spring Boot ──────────────────────────────────
 resource "aws_ecr_repository" "app" {
   name                 = "${var.project}-management"
   image_tag_mutability = "MUTABLE"
@@ -10,7 +9,6 @@ resource "aws_ecr_repository" "app" {
   tags = merge(var.tags, { Name = "${var.project}-management" })
 }
 
-# ── Repositorio ECR: Grafana Alloy personalizado ──────────────────────────────
 resource "aws_ecr_repository" "alloy" {
   name                 = "alloy-custom"
   image_tag_mutability = "MUTABLE"
@@ -22,7 +20,6 @@ resource "aws_ecr_repository" "alloy" {
   tags = merge(var.tags, { Name = "alloy-custom" })
 }
 
-# ── Política de ciclo de vida: mantener últimas 5 imágenes ───────────────────
 resource "aws_ecr_lifecycle_policy" "app" {
   repository = aws_ecr_repository.app.name
   policy = jsonencode({

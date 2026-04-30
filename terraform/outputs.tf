@@ -8,7 +8,6 @@ output "app_url" {
   value       = "http://${module.load_balancer.alb_dns_name}/api/v2"
 }
 
-# ── Bastion ──────────────────────────────────────────────────────────────────
 output "bastion_public_ip" {
   description = "IP pública del Bastion Host"
   value       = module.bastion.bastion_public_ip
@@ -24,7 +23,6 @@ output "bastion_tunnel_command" {
   value       = module.bastion.ssh_tunnel_command
 }
 
-# ── RDS ──────────────────────────────────────────────────────────────────────
 output "rds_endpoint" {
   description = "Endpoint privado de la base de datos RDS"
   value       = module.rds.db_endpoint
@@ -35,13 +33,11 @@ output "rds_connection_via_tunnel" {
   value       = "psql -h localhost -p 5433 -U ${var.db_username} -d ${var.db_name}"
 }
 
-# ── ECS ──────────────────────────────────────────────────────────────────────
 output "ecs_cluster_name" {
   description = "Nombre del cluster ECS"
   value       = module.ecs.cluster_name
 }
 
-# ── ECR ──────────────────────────────────────────────────────────────────────
 output "ecr_app_url" {
   description = "URL del repositorio ECR de la aplicación"
   value       = module.ecr.app_repository_url
@@ -52,13 +48,11 @@ output "ecr_alloy_url" {
   value       = module.ecr.alloy_repository_url
 }
 
-# ── Observabilidad ────────────────────────────────────────────────────────────
 output "log_group_name" {
   description = "Nombre del log group en CloudWatch"
   value       = module.observability.log_group_name
 }
 
-# ── Destrucción ───────────────────────────────────────────────────────────────
 output "destroy_command" {
   description = "Comando para destruir toda la infraestructura al finalizar"
   value       = "terraform destroy -var-file=environments/${var.environment}/terraform.tfvars -auto-approve"

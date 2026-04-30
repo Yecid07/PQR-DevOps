@@ -8,7 +8,7 @@ data "aws_iam_policy_document" "ecs_assume_role" {
   }
 }
 
-# ── Execution Role (pull imagen, escribir logs) ───────────────────────────────
+# Execution Role (pull imagen, escribir logs)
 resource "aws_iam_role" "ecs_execution" {
   name               = "${var.project}-${var.environment}-ecs-execution-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_assume_role.json
@@ -35,7 +35,7 @@ resource "aws_iam_role_policy" "ecr_pull" {
   })
 }
 
-# ── Task Role (permisos en runtime) ──────────────────────────────────────────
+# Task Role (permisos en runtime)
 resource "aws_iam_role" "ecs_task" {
   name               = "${var.project}-${var.environment}-ecs-task-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_assume_role.json

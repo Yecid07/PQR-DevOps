@@ -1,4 +1,3 @@
-# ── Task Definition (replica exacta de la task proporcionada) ────────────────
 resource "aws_ecs_task_definition" "pqr" {
   family             = "${var.project}-task"
   requires_compatibilities = ["FARGATE"]
@@ -70,7 +69,6 @@ resource "aws_ecs_task_definition" "pqr" {
   tags = merge(var.tags, { Name = "${var.project}-task" })
 }
 
-# ── ECS Service ───────────────────────────────────────────────────────────────
 resource "aws_ecs_service" "pqr" {
   name            = "${var.project}-${var.environment}-service"
   cluster         = var.cluster_id
