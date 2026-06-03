@@ -1,57 +1,53 @@
-data "aws_iam_policy_document" "ecs_assume_role" {
-  statement {
-    actions = ["sts:AssumeRole"]
-    principals {
-      type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
-    }
-  }
-}
+# ── EKS Cluster Role ─────────────────────────────────────────────────────────
 
-# Execution Role (pull imagen, escribir logs)
-resource "aws_iam_role" "ecs_execution" {
-  name               = "${var.project}-${var.environment}-ecs-execution-role"
-  assume_role_policy = data.aws_iam_policy_document.ecs_assume_role.json
-  tags               = var.tags
-}
+resource "aws_iam_role" "eks_cluster" {
+  name = "${var.project}-${var.environment}-eks-cluster-role"
 
-resource "aws_iam_role_policy_attachment" "ecs_execution_managed" {
-  role       = aws_iam_role.ecs_execution.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
-# Permiso extra: leer de ECR privado (ya incluido en managed policy, pero explícito)
-resource "aws_iam_role_policy" "ecr_pull" {
-  name = "${var.project}-${var.environment}-ecr-pull"
-  role = aws_iam_role.ecs_execution.id
-  policy = jsonencode({
+  assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect   = "Allow"
-      Action   = ["ecr:GetDownloadUrlForLayer", "ecr:BatchGetImage",
-                  "ecr:BatchCheckLayerAvailability", "ecr:GetAuthorizationToken"]
-      Resource = "*"
+      Effect    = "Allow"
+      Principal = { Service = "eks.amazonaws.com" }
+      Action    = "sts:AssumeRole"
     }]
   })
+
+  tags = var.tags
 }
 
-# Task Role (permisos en runtime)
-resource "aws_iam_role" "ecs_task" {
-  name               = "${var.project}-${var.environment}-ecs-task-role"
-  assume_role_policy = data.aws_iam_policy_document.ecs_assume_role.json
-  tags               = var.tags
+resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
+  role       = aws_iam_role.eks_cluster.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
 }
 
-resource "aws_iam_role_policy" "ecs_task_cloudwatch" {
-  name = "${var.project}-${var.environment}-task-cw"
-  role = aws_iam_role.ecs_task.id
-  policy = jsonencode({
+# ── EKS Node Role ─────────────────────────────────────────────────────────────
+
+resource "aws_iam_role" "eks_node" {
+  name = "${var.project}-${var.environment}-eks-node-role"
+
+  assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect   = "Allow"
-      Action   = ["logs:CreateLogStream", "logs:PutLogEvents",
-                  "cloudwatch:PutMetricData", "xray:PutTraceSegments"]
-      Resource = "*"
+      Effect    = "Allow"
+      Principal = { Service = "ec2.amazonaws.com" }
+      Action    = "sts:AssumeRole"
     }]
   })
+
+  tags = var.tags
+}
+
+resource "aws_iam_role_policy_attachment" "eks_worker_node_policy" {
+  role       = aws_iam_role.eks_node.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
+  role       = aws_iam_role.eks_node.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+}
+
+resource "aws_iam_role_policy_attachment" "ecr_read_only" {
+  role       = aws_iam_role.eks_node.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }

@@ -127,3 +127,22 @@ variable "bastion_instance_type" {
   type        = string
   default     = "t3.micro"
 }
+
+# agrega estas al final de tu variables.tf existente
+
+variable "canary_image" {
+  description = "URI de la imagen Docker canary"
+  type        = string
+}
+
+variable "stable_traffic_weight" {
+  description = "Porcentaje de tráfico hacia stable"
+  type        = number
+  default     = 80
+}
+
+variable "canary_traffic_weight" {
+  description = "Porcentaje de tráfico hacia canary"
+  type        = number
+  default     = 20
+}

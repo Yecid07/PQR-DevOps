@@ -17,8 +17,8 @@ resource "aws_subnet" "public" {
   availability_zone       = var.availability_zones[count.index]
   map_public_ip_on_launch = true
   tags = merge(var.tags, {
-    Name = "${var.project}-${var.environment}-public-${count.index + 1}"
-    Tier = "public"
+    "kubernetes.io/role/elb"                        = "1"
+    "kubernetes.io/cluster/${var.project}-${var.environment}" = "shared"
   })
 }
 
@@ -28,8 +28,8 @@ resource "aws_subnet" "private" {
   cidr_block        = var.private_subnets[count.index]
   availability_zone = var.availability_zones[count.index]
   tags = merge(var.tags, {
-    Name = "${var.project}-${var.environment}-private-${count.index + 1}"
-    Tier = "private"
+    "kubernetes.io/role/internal-elb"               = "1"
+    "kubernetes.io/cluster/${var.project}-${var.environment}" = "shared"
   })
 }
 
@@ -147,19 +147,17 @@ resource "aws_security_group" "ecs" {
 
 resource "aws_security_group" "rds" {
   name        = "${var.project}-${var.environment}-sg-rds"
-  description = "Permite PostgreSQL desde ECS y desde el Bastion Host"
+  description = "Permite PostgreSQL desde EKS y desde el Bastion Host"
   vpc_id      = aws_vpc.main.id
 
-  # Desde los contenedores ECS (acceso de la aplicación)
   ingress {
-    description     = "PostgreSQL desde ECS"
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    security_groups = [aws_security_group.ecs.id]
+    description = "PostgreSQL desde VPC"
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
   }
 
-  # Desde el Bastion Host (túnel SSH para administración y scripts)
   ingress {
     description     = "PostgreSQL desde Bastion Host"
     from_port       = 5432
@@ -174,5 +172,4 @@ resource "aws_security_group" "rds" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  tags = merge(var.tags, { Name = "${var.project}-${var.environment}-sg-rds" })
 }
